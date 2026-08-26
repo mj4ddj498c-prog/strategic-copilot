@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import re
-import anthropic
+from openai import OpenAI
 from sheets import get_client, ensure_setup
 
 SETUP_PROMPT = """You are helping set up an automated job search screening system.
@@ -57,11 +57,11 @@ def _read_stdin(label):
 
 
 def main():
-    api_key   = os.environ.get('ANTHROPIC_API_KEY', '').strip()
-    sheets_id = os.environ.get('GOOGLE_SHEETS_ID', '').strip()
-
-    if not api_key or not sheets_id:
-        print('ERROR: ANTHROPIC_API_KEY and GOOGLE_SHEETS_ID must be set')
+    if not os.environ.get('OPENAI_API_KEY') or not os.environ.get('GOOGLE_SHEETS_ID'):
+    print('ERROR: OPENAI_API_KEY and GOOGLE_SHEETS_ID must be set')
+    return
+  if not api_key or not sheets_id:
+        print('ERROR: OPENAI_API_KEY and GOOGLE_SHEETS_ID must be set')
         sys.exit(1)
 
     # File mode (GitHub Actions) falls back to interactive (local)
@@ -80,28 +80,31 @@ def main():
         print('ERROR: Both resume and sample job descriptions are required')
         sys.exit(1)
 
-    print('\nGenerating scoring profile with Claude...')
-    client = anthropic.Anthropic(api_key=api_key)
-    response = client.messages.create(
-        model='claude-sonnet-4-6',
-        max_tokens=2048,
-        messages=[{
-            'role': 'user',
-            'content': SETUP_PROMPT.format(resume=resume[:15000], jobs=jobs[:20000]),
-        }],
-    )
+print('\nGenerating scoring profile with OpenAI...')
+client = OpenAI(
+    api_key=os.environ["OPENAI_API_KEY"]
+)
+    response = client.responses.create(
+    model="gpt-5.4",
+    input=SETUP_PROMPT.format(
+        resume=resume[:15000],
+        jobs=jobs[:20000],
+    ),
+)
+
+raw = response.output_text.strip()
 
     text = response.content[0].text
     match = re.search(r'\{[\s\S]*\}', text)
     if not match:
-        print('ERROR: Could not parse Claude response')
+        print('ERROR: Could not parse OpenAI response')
         print(text)
         sys.exit(1)
 
     try:
         profile = json.loads(match.group())
     except json.JSONDecodeError as e:
-        print(f'ERROR: Invalid JSON in Claude response: {e}')
+        print(f'ERROR: Invalid JSON in OpenAI response: {e}')
         print(text)
         sys.exit(1)
 

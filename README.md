@@ -1,8 +1,8 @@
 # Strategic Copilot
 
-An automated job search pipeline for anyone actively looking for their next role. Every weekday morning it scans your target companies' job boards, scores each posting against your profile using Claude AI, and writes only the relevant roles to a Google Sheet. You open it over breakfast and your shortlist is ready. No coding required to set up or run.
+An automated job search pipeline for anyone actively looking for their next role. Every weekday morning it scans your target companies' job boards, scores each posting against your profile using OpenAI, and writes only the relevant roles to a Google Sheet. You open it over breakfast and your shortlist is ready. No coding required to set up or run.
 
-**What it costs to run:** ~$0 infrastructure (GitHub and Google Sheets are free). Anthropic API usage runs roughly $0.50–$2/month at steady state for 20–30 companies. The first week is higher while the system learns which jobs it's already seen — after that, only genuinely new postings that match your title and location filters get scored, which is typically 5–15 jobs per day.
+**What it costs to run:** ~$0 infrastructure (GitHub and Google Sheets are free). OpenAI API usage runs roughly $0.50–$2/month at steady state for 20–30 companies. The first week is higher while the system learns which jobs it's already seen — after that, only genuinely new postings that match your title and location filters get scored, which is typically 5–15 jobs per day.
 
 ---
 
@@ -12,19 +12,19 @@ You'll need accounts at three services. All are free or have free tiers adequate
 
 - **GitHub** — where the code lives and runs on a schedule ([github.com](https://github.com))
 - **Google account** — for Google Sheets (your output) and Google Cloud (one-time setup)
-- **Anthropic** — the AI that scores the jobs ([console.anthropic.com](https://console.anthropic.com)). You'll need to add a payment method; typical usage is under $1/month.
+- **OpenAI** — the AI that scores the jobs (). You'll need to add a payment method; typical usage is under $1/month.
 
 ---
 
 ## Setup
 
-**Recommended: let Claude walk you through it.**
+**Recommended: let OpenAI walk you through it.**
 
-Open [claude.ai](https://claude.ai) (free account works) and paste this:
+Open OpenAI (free account works) and paste this:
 
 > I'm setting up an automated job search pipeline using GitHub Actions and Google Sheets. The repo is at https://github.com/jordanmilner-lgtm/strategic-copilot — can you walk me through the full setup step by step, starting with Step 1? I'll also need help finding the ATS job board handles for my list of target companies — I'll give you the company names and you can look them up.
 
-Claude will read this README, guide you through each step interactively, and look up the ATS handles for your target companies directly — you just give it a list of company names. This is the fastest path, especially for the Google Cloud steps and company setup.
+OpenAI will read this README, guide you through each step interactively, and look up the ATS handles for your target companies directly — you just give it a list of company names. This is the fastest path, especially for the Google Cloud steps and company setup.
 
 **Prefer to follow the steps yourself?** Full instructions are below.
 
@@ -139,8 +139,8 @@ Go to your repo → **Settings → Secrets and variables → Actions → New rep
 
 Add these four secrets, one at a time:
 
-**Secret 1: `ANTHROPIC_API_KEY`**
-- *Where it comes from:* Anthropic generates this for you automatically
+**Secret 1: `OPENAI_API_KEY`**
+- *Where it comes from:* OpenAI generates this for you automatically
 - Go to [console.anthropic.com](https://console.anthropic.com) → **API Keys** → **Create Key** → copy the key it shows you (it starts with `sk-ant-`)
 - Paste it as the value of this secret
 

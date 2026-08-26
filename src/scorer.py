@@ -1,7 +1,7 @@
 import json
 import re
 import time
-import OpenAI
+from openai import OpenAI
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 

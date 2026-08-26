@@ -1,7 +1,7 @@
 import json
 import re
 import time
-import anthropic
+import OpenAI
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 
@@ -101,23 +101,22 @@ def _parse(text: str, job_url: str) -> dict:
 
 
 def score_jobs(jobs: list, profile: dict, api_key: str) -> list:
-    client = anthropic.Anthropic(api_key=api_key)
+    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
     results = []
 
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=2, min=5, max=60),
-        retry=retry_if_exception_type((anthropic.RateLimitError, anthropic.APIConnectionError)),
-        reraise=True,
+        retry=retry_if_exception_type((openai.RateLimitError, openai.APIConnectionError)),        reraise=True,
     )
     def _call(prompt: str) -> str:
-        msg = client.messages.create(
-            model='claude-haiku-4-5-20251001',
-            max_tokens=1024,
-            messages=[{'role': 'user', 'content': prompt}],
-        )
-        return msg.content[0].text
-
+    response = client.responses.create(
+        model="gpt-5-mini",
+        input=prompt,
+    )
+    raw = response.output_text.strip()
+    return raw
+    
     for i, job in enumerate(jobs):
         url = job.get('job_url', '')
         try:

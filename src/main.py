@@ -11,13 +11,13 @@ from scorer import score_jobs
 def main():
     print(f'[{datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")} UTC] Strategic Copilot starting')
 
-    api_key       = os.environ.get('ANTHROPIC_API_KEY', '').strip()
+    api_key = os.environ.get('OPENAI_API_KEY', '').strip()    
     sheets_id     = os.environ.get('GOOGLE_SHEETS_ID', '').strip()
     rapidapi_key  = os.environ.get('RAPIDAPI_KEY', '').strip()
     lookback_days = int(os.environ.get('LOOKBACK_DAYS', '30') or '30')
 
     if not api_key or not sheets_id:
-        print('ERROR: ANTHROPIC_API_KEY and GOOGLE_SHEETS_ID must be set')
+        print('ERROR: OPENAI_API_KEY and GOOGLE_SHEETS_ID must be set')
         sys.exit(1)
 
     client = get_client()
